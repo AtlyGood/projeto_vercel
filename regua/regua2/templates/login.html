@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Regua</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2e8d043f0.js" crossorigin="anonymous"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #fff;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+      padding: 20px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    header span {
+      color: #2aa745;
+    }
+
+    main {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 24px;
+      letter-spacing: 10px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 16px 12px 40px;
+      border: 1px solid #ccc;
+      border-radius: 999px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      color: #999;
+    }
+
+    .login-text {
+      margin: 24px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .login-text a {
+      color: #2aa745;
+      text-decoration: none;
+      margin-left: 4px;
+    }
+
+    .login-text a:hover {
+      text-decoration: underline;
+    }
+
+    .confirm-btn-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .confirm-btn {
+      background-color: #2aa745;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 999px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .confirm-btn:hover {
+      background-color: #228c3a;
+    }
+
+    .mensagem-erro {
+      color: #dc3545;
+      margin-bottom: 15px;
+      font-weight: bold;
+      animation: fadeIn 0.5s;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px 15px;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .mensagem-sucesso {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #2aa745;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    footer {
+      border-top: 1px solid #ccc;
+      height: 30px;
+    }
+
+    @media (max-width: 500px) {
+      .title {
+        font-size: 20px;
+        letter-spacing: 6px;
+      }
+
+      .confirm-btn-container {
+        justify-content: center;
+      }
+
+      .confirm-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1><span>R</span>egua</h1>
+  </header>
+
+  <main>
+    <h2 class="title">LOGIN</h2>
+    
+    {% if messages %}
+      {% for message in messages %}
+    <div class="mensagem-erro">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    
+    {% if request.session.cadastro_sucesso %}
+    <div id="mensagem-sucesso" class="mensagem-sucesso">
+      Cadastro realizado com sucesso!
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'loginatalho' %}">
+      {% csrf_token %}
+      
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" name="email" placeholder="E-mail" required>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="senha" placeholder="Senha" required>
+      </div>
+
+      <div class="login-text">
+        Não tem uma conta? <a href="{% url 'autenticar' %}">Cadastre-se</a>
+      </div>
+
+      <div class="confirm-btn-container">
+        <button type="submit" class="confirm-btn">ENTRAR</button>
+      </div>
+    </form>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Remove a mensagem de erro após 5 segundos
+      const mensagemErro = document.querySelector('.mensagem-erro');
+      if (mensagemErro) {
+        setTimeout(() => {
+          mensagemErro.style.opacity = '0';
+          mensagemErro.style.transition = 'opacity 0.5s';
+          setTimeout(() => mensagemErro.remove(), 500);
+        }, 5000);
+      }
+      
+      // Remove a mensagem de sucesso após 3 segundos
+      const mensagemSucesso = document.getElementById('mensagem-sucesso');
+      if (mensagemSucesso) {
+        setTimeout(() => {
+          mensagemSucesso.style.animation = 'fadeOut 0.5s';
+          setTimeout(() => {
+            mensagemSucesso.remove();
+            // Limpa a sessão via AJAX após remover a mensagem
+            fetch('{% url "limpar_sessao" %}', {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({})
+            });
+          }, 500);
+        }, 3000);
+      }
+
+      // Validação do formulário antes de enviar
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const email = this.querySelector('input[name="email"]').value.trim();
+        const senha = this.querySelector('input[name="senha"]').value.trim();
+        
+        if (!email || !senha) {
+          e.preventDefault();
+          alert('Por favor, preencha todos os campos!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

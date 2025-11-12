@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Regua - Sistema para Barbearias</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Unbounded', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    nav h1 {
+      color: #000;
+      font-size: 1.75rem;
+      font-weight: bold;
+    }
+
+    .navbar-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav .btn {
+      font-size: 1rem;
+      background-color: #22c55e;
+      color: #000;
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.3s ease;
+      transition: 1.5s;
+    }
+
+    nav .btn:hover {
+      background-color: #16a34a;
+      transform: translateY(-7px);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      height: 570px;
+      background-image: url('https://tse2.mm.bing.net/th/id/OIP.tjjBhm2DrcdkIqzxXDO9ygHaE8?rs=1&pid=ImgDetMain&o=7&rm=3');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+    }
+
+    .hero ul li {
+      margin-bottom: 0.75rem;
+      font-size: 1.125rem;
+    }
+
+    .btn {
+      background-color: #22c55e;
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #16a34a;
+    }
+
+    /* Info Section */
+    .info {
+      background-color: #111827;
+      padding: 3rem 1.5rem;
+    }
+
+    .info-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .linha{
+      border-right: 4px solid #00ff59;
+    }
+
+    .info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .info h3 .highlight {
+      color: #22c55e;
+    }
+
+    .info ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info ul li {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .info p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .R {
+      color: #22c55e;
+    }
+
+    @media(min-width: 768px) {
+      .hero-overlay {
+        padding: 3rem 4rem;
+      }
+
+      .hero h2 {
+        font-size: 3rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <h1><span class="R">R</span>egua</h1>
+    <div class="navbar-buttons">
+      <a href="{% url 'loginatalho' %}" class="btn">Login</a>
+      <a href="{% url 'autenticar' %}" class="btn">Cadastrar</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-overlay">
+      <!-- conteúdo opcional dentro do hero -->
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section class="info">
+    <div class="info-grid">
+      <div class="linha">
+        <h3>Imagine ter</h3>
+        <ul>
+          <li>• Agenda lotada com agendamentos online e lembretes automáticos.</li>
+          <li>• Controle total do seu estoque, sem surpresas e desperdícios.</li>
+          <li>• Relatórios completos para acompanhar o desempenho do seu negócio.</li>
+          <li>• Comunicação direta com seus clientes, com promoções e novidades exclusivas.</li>
+        </ul>
+      </div>
+      <div>
+        <h3><span class="highlight">Venha conosco!</span></h3>
+        <p>
+          Diga adeus à papelada e planilhas! Nosso sistema é simples, intuitivo e completo, feito sob medida para a sua barbearia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

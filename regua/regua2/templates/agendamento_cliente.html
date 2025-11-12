@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila de Agendamentos | Regua</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Inter:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Navbar */
+        nav {
+            background-color: #fff;
+            color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            color: #000000;
+            font-weight: bold;
+            font-family: 'Unbounded', sans-serif;
+        }
+        
+        .R {
+            color: #1DB954;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .profile-pic-nav {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s;
+        }
+        
+        .profile-pic-nav:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dropdown Button */
+        .dropbtn {
+            background-color: transparent;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Unbounded', sans-serif;
+        }
+
+        /* Dropdown container */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Dropdown Content */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+            color: #000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        /* Conteúdo principal */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Seletor de barbearia */
+        .barbearia-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .barbearia-selector label {
+            font-weight: 600;
+        }
+        
+        .barbearia-selector select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            flex-grow: 1;
+        }
+        
+        /* Tabela de agendamentos */
+        .agendamentos-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .agendamentos-table th, 
+        .agendamentos-table td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        
+        .agendamentos-table th {
+            background-color: #1DB954;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .agendamentos-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .cliente-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .cliente-foto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancelar {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-cancelar:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .posicao-fila {
+            font-weight: bold;
+            color: #1DB954;
+            font-size: 1.1rem;
+        }
+
+        .alert-messages {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            animation: fadeIn 0.5s;
+        }
+
+        .meu-agendamento {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1DB954;
+            font-weight: bold;
+        }
+
+        .minha-posicao {
+            background-color: #1DB954;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .minha-posicao h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+        }
+
+        .minha-posicao p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .status-agendamento {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .status-pendente {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-andamento {
+            background-color: #D1ECF1;
+            color: #0C5460;
+        }
+        
+        .status-concluido {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status-cancelado {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+
+        .horario-coluna {
+            font-weight: 600;
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        /* Novos estilos para horário estimado */
+        .horario-estimado-info {
+            margin: 15px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .horario-estimado-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.3rem;
+        }
+
+        .horario-estimado-info p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .horario-estimado-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .aguardando-horario {
+            background-color: #ffc107;
+            color: #856404;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .horario-estimado-cell {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .horario-definido {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .custom-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 10000;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .custom-notification.success {
+            background-color: #28a745;
+        }
+
+        .custom-notification.error {
+            background-color: #dc3545;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .agendamentos-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="{% url 'Homeatalho' %}" style="text-decoration: none; color: inherit;">
+                <span class="R">R</span>egua
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="alert-messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="nav-links">
+            <div class="dropdown">
+                <button class="dropbtn">☰ Menu</button>
+                <div class="dropdown-content">
+                    <a href="{% url 'barbeariaatalho' %}">Barbearias Disponíveis</a>
+                    <a href="{% url 'agendamento_clienteatalho' %}">Meus Agendamentos</a>
+                    <a href="{% url 'logout' %}" style="color: #ef4444;">Sair</a>
+                </div>
+            </div>
+            <a href="{% url 'perfilatalho' %}" class="profile-icon">
+                <div class="profile-pic-nav" 
+                     {% if foto_url %}style="background-image: url('{{ foto_url }}')"{% endif %}>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>FILA DE AGENDAMENTOS</h1>
+            <p>Acompanhe sua posição na fila da Barbearia</p>
+        </div>
+        
+        <!-- Seletor de Barbearia -->
+        <div class="barbearia-selector">
+            <label for="barbearia">Barbearia:</label>
+            <select id="barbearia" onchange="filtrarBarbearia()">
+                <option value="all">Todas as Barbearias</option>
+                {% for barbearia in barbearias %}
+                <option value="{{ barbearia.id }}">{{ barbearia.nome_barbearia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Exibe a posição do cliente -->
+        {% for agendamento in agendamentos %}
+            {% if agendamento.eh_meu and not agendamento.confirmado %}
+            <div class="minha-posicao">
+                <h3>Sua posição na fila: {{ forloop.counter }}</h3>
+                <p>Barbearia: {{ agendamento.barbearia.nome_barbearia }}</p>
+                <p>Entrou na fila: {{ agendamento.data_criacao|date:"d/m/Y H:i" }}</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Exibe o horário estimado para o cliente -->
+        {% for agendamento in agendamentos %}
+            {% if agendamento.eh_meu and not agendamento.confirmado %}
+            <div class="horario-estimado-info" id="horario-estimado-info">
+                <h3>⏰ Horário Estimado</h3>
+                <div id="horario-estimado-content">
+                    {% if agendamento.horario_estimado %}
+                    <div id="horario-definido">
+                        <span class="horario-estimado-badge">
+                            🕒 Seu horário estimado: {{ agendamento.horario_estimado|time:"H:i" }}
+                        </span>
+                        <p>O barbeiro definiu este horário para seu atendimento</p>
+                    </div>
+                    {% else %}
+                    <span class="aguardando-horario pulse-animation" id="aguardando-horario">
+                        ⏳ Aguardando horário estimado pelo barbeiro...
+                    </span>
+                    <div id="horario-definido" style="display: none;">
+                        <span class="horario-estimado-badge">
+                            🕒 Seu horário estimado: <span id="horario-estimado-value"></span>
+                        </span>
+                        <p>O barbeiro definiu este horário para seu atendimento</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        
+        {% if agendamentos %}
+        <table class="agendamentos-table">
+            <thead>
+                <tr>
+                    <th>Posição</th>
+                    <th>Cliente</th>
+                    <th>Status</th>
+                    <th>Horário de Entrada</th>
+                    <th>Horário Estimado</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agendamento in agendamentos %}
+                {% if not agendamento.confirmado %}
+                <tr class="{% if agendamento.eh_meu %}meu-agendamento{% endif %}" 
+                    data-barbearia="{{ agendamento.barbearia.id }}"
+                    data-id="{{ agendamento.id }}">
+                    <td class="posicao-fila">{{ forloop.counter }}</td>
+                    <td>
+                        <div class="cliente-info">
+                            <div class="cliente-foto" 
+                                 style="background-image: url('{% if agendamento.cliente.foto_perfil %}{{ agendamento.cliente.foto_perfil.url }}{% else %}https://via.placeholder.com/40?text=CL{% endif %}')">
+                            </div>
+                            <div>
+                                <strong>
+                                    {% if agendamento.eh_meu %}
+                                        Você
+                                    {% else %}
+                                        Cliente {{ forloop.counter }}
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if agendamento.cancelado %}
+                            <span class="status-agendamento status-cancelado">Cancelado</span>
+                        {% elif agendamento.concluido %}
+                            <span class="status-agendamento status-concluido">Concluído</span>
+                        {% elif agendamento.em_andamento %}
+                            <span class="status-agendamento status-andamento">Em Andamento</span>
+                        {% else %}
+                            <span class="status-agendamento status-pendente">Pendente</span>
+                        {% endif %}
+                    </td>
+                    <td class="horario-coluna">
+                        {{ agendamento.data_criacao|date:"H:i" }}
+                    </td>
+                    <td class="horario-estimado-cell" id="horario-estimado-{{ agendamento.id }}">
+                        {% if agendamento.horario_estimado %}
+                            <span class="horario-definido">{{ agendamento.horario_estimado|time:"H:i" }}</span>
+                        {% else %}
+                            {% if agendamento.eh_meu %}
+                                <span class="aguardando-horario">Aguardando...</span>
+                            {% else %}
+                                <span>-</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if agendamento.eh_meu %}
+                        <button class="action-btn btn-cancelar" onclick="cancelarAgendamento({{ agendamento.id }})">
+                            Cancelar
+                        </button>
+                        {% else %}
+                        <span>-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <p>Nenhum agendamento pendente encontrado</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let pollingInterval;
+
+        // Função para buscar horário estimado do servidor
+        function buscarHorarioEstimado() {
+            const meuAgendamentoId = getMeuAgendamentoId();
+            
+            if (!meuAgendamentoId) return;
+            
+            fetch('/buscar-meu-horario-estimado/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta do servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.error) {
+                    if (data.possui_horario && data.horario_estimado) {
+                        atualizarHorarioEstimado(meuAgendamentoId, data.horario_estimado);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar horário estimado:', error);
+            });
+        }
+
+        // Função para verificar atualizações de horário estimado
+        function verificarHorarioEstimado() {
+            buscarHorarioEstimado();
+        }
+
+        // Função para obter o ID do agendamento do usuário atual
+        function getMeuAgendamentoId() {
+            const minhaLinha = document.querySelector('.meu-agendamento');
+            return minhaLinha ? minhaLinha.dataset.id : null;
+        }
+
+        // Função para atualizar o horário estimado na interface
+        function atualizarHorarioEstimado(agendamentoId, horario) {
+            // Atualiza o card principal
+            const aguardandoElement = document.getElementById('aguardando-horario');
+            const horarioDefinidoElement = document.getElementById('horario-definido');
+            const horarioValueElement = document.getElementById('horario-estimado-value');
+            
+            if (aguardandoElement && horarioDefinidoElement && horarioValueElement) {
+                aguardandoElement.style.display = 'none';
+                horarioValueElement.textContent = horario;
+                horarioDefinidoElement.style.display = 'block';
+                
+                // Adiciona animação de confirmação
+                const horarioInfo = document.getElementById('horario-estimado-info');
+                horarioInfo.classList.add('pulse-animation');
+                setTimeout(() => {
+                    horarioInfo.classList.remove('pulse-animation');
+                }, 2000);
+            }
+
+            // Atualiza na tabela
+            const horarioCell = document.getElementById(`horario-estimado-${agendamentoId}`);
+            if (horarioCell) {
+                horarioCell.innerHTML = `<span class="horario-definido">${horario}</span>`;
+            }
+
+            // Mostra notificação
+            showNotification(`🎉 Horário estimado definido: ${horario}`, 'success');
+        }
+
+        // Função para mostrar notificações
+        function showNotification(message, type = 'success') {
+            // Remove notificações existentes
+            const existingNotifications = document.querySelectorAll('.custom-notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
+            });
+            
+            // Cria nova notificação
+            const notification = document.createElement('div');
+            notification.className = `custom-notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove automaticamente após 5 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Filtra por barbearia
+        function filtrarBarbearia() {
+            const barbeariaId = document.getElementById('barbearia').value;
+            const rows = document.querySelectorAll('.agendamentos-table tbody tr');
+            
+            let posicao = 1;
+            
+            rows.forEach(row => {
+                if (barbeariaId === 'all' || row.dataset.barbearia === barbeariaId) {
+                    row.style.display = '';
+                    row.querySelector('.posicao-fila').textContent = posicao++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Atualiza a posição do cliente
+            atualizarMinhaPosicao();
+        }
+        
+        // Atualiza a exibição da posição do cliente
+        function atualizarMinhaPosicao() {
+            const minhaPosicaoDiv = document.querySelector('.minha-posicao');
+            if (minhaPosicaoDiv) {
+                const minhaLinha = document.querySelector('.meu-agendamento');
+                if (minhaLinha && minhaLinha.style.display !== 'none') {
+                    const novaPosicao = minhaLinha.querySelector('.posicao-fila').textContent;
+                    minhaPosicaoDiv.querySelector('h3').textContent = `Sua posição na fila: ${novaPosicao}`;
+                }
+            }
+        }
+        
+        // Cancela agendamento
+        function cancelarAgendamento(agendamentoId) {
+            if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+                fetch(`/cancelar-agendamento/${agendamentoId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Remove a linha cancelada
+                        const row = document.querySelector(`tr[data-id="${agendamentoId}"]`);
+                        if (row) row.remove();
+                        
+                        // Remove o card de horário estimado se for o próprio usuário
+                        if (row && row.classList.contains('meu-agendamento')) {
+                            const horarioInfo = document.getElementById('horario-estimado-info');
+                            if (horarioInfo) horarioInfo.remove();
+                            
+                            const minhaPosicao = document.querySelector('.minha-posicao');
+                            if (minhaPosicao) minhaPosicao.remove();
+                        }
+                        
+                        // Atualiza as posições
+                        atualizarPosicoesFila();
+                        atualizarMinhaPosicao();
+                        
+                        showNotification('Agendamento cancelado com sucesso!', 'success');
+                    } else {
+                        showNotification(data.message || 'Erro ao cancelar agendamento', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Erro ao cancelar agendamento', 'error');
+                });
+            }
+        }
+        
+        // Atualiza todas as posições na fila
+        function atualizarPosicoesFila() {
+            const linhas = document.querySelectorAll('.agendamentos-table tbody tr:not([style*="display: none"])');
+            let posicao = 1;
+            
+            linhas.forEach(linha => {
+                linha.querySelector('.posicao-fila').textContent = posicao++;
+            });
+        }
+
+        // Verifica se o usuário tem um agendamento ativo ao carregar a página
+        function verificarAgendamentoAtivo() {
+            fetch('/verificar-agendamento-ativo/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.possui_agendamento === false) {
+                    // Se não tem agendamento ativo, mostra mensagem e redireciona
+                    showNotification('Você não está na fila de nenhuma barbearia. Redirecionando...', 'error');
+                    setTimeout(() => {
+                        window.location.href = '{% url "barbeariaatalho" %}';
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao verificar agendamento ativo:', error);
+            });
+        }
+        
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostra todas as barbearias inicialmente
+            filtrarBarbearia();
+            
+            // Verifica se o usuário tem agendamento ativo
+            verificarAgendamentoAtivo();
+            
+            // Busca o horário estimado imediatamente ao carregar a página
+            buscarHorarioEstimado();
+            
+            // Inicia a verificação periódica de horários estimados
+            pollingInterval = setInterval(verificarHorarioEstimado, 5000); // Verifica a cada 5 segundos
+            
+            // Adiciona estilos CSS para animações (caso não existam)
+            if (!document.querySelector('#custom-styles')) {
+                const style = document.createElement('style');
+                style.id = 'custom-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+
+        // Limpa o intervalo quando a página é fechada
+        window.addEventListener('beforeunload', function() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+    </script>
+</body>
+</html>
